@@ -29,7 +29,6 @@ public class WikiImageService : MonoBehaviour
     /// </summary>
     private IEnumerator GetJson(string url, Action<string> onDone, Action<string> onError)
     {
-        Debug.Log("GetJson");
         using (var req = UnityWebRequest.Get(url))
         {
             yield return req.SendWebRequest();
@@ -62,7 +61,6 @@ public class WikiImageService : MonoBehaviour
     /// </summary>
     public IEnumerator GetImageUrls(string title, int maxCount, Action<List<string>> onDone, Action<string> onError)
     {
-        Debug.Log("GetImageUrls");
         var url = MediaListUrl(title);
         yield return GetJson(url, (json) =>
         {
@@ -83,7 +81,6 @@ public class WikiImageService : MonoBehaviour
     /// </summary>
     public IEnumerator GetLinkedArticleTitles(string title, int maxCount, Action<List<string>> onDone, Action<string> onError)
     {
-        Debug.Log("GetLinkedArticleTitles");
         var url = LinksUrl(title, Math.Max(2, maxCount));
         yield return GetJson(url, (json) =>
         {
@@ -269,7 +266,6 @@ public class WikiImageService : MonoBehaviour
 
     private List<string> ParseImageUrlsFromMediaList(string json, int maxCount)
     {
-        Debug.Log("ParseImageUrlsFromMediaList");
         var result = new List<string>(maxCount);
         var root = TinyJson.Parse(json) as Dictionary<string, object>;
         if (root == null || !root.ContainsKey("items")) return result;
@@ -318,7 +314,6 @@ public class WikiImageService : MonoBehaviour
 
     private string TryPickBestImageSrc(Dictionary<string, object> mediaItem)
     {
-        Debug.Log("TryPickBestImageSrc");
         // 1. Prefer: original.source (full-resolution, always https)
         if (mediaItem.TryGetValue("original", out var origObj) &&
             origObj is Dictionary<string, object> original &&
@@ -358,7 +353,6 @@ public class WikiImageService : MonoBehaviour
 
     private string NormalizeWikiUrl(string url)
     {
-        Debug.Log("NormalizeWikiUrl");
         if (string.IsNullOrEmpty(url)) return null;
 
         // Convert protocol-relative URLs like //upload.wikimedia.org/... → https://...
@@ -375,7 +369,6 @@ public class WikiImageService : MonoBehaviour
 
     private List<string> ParseLinksFromQuery(string json, int maxCount)
     {
-        Debug.Log("ParseLinksFromQuery");
         // We'll lightly transform to classes where possible
         // But page keys are dynamic, so we first use TinyJson to locate pages[*].links[*].title
         var result = new List<string>(maxCount);
@@ -418,7 +411,6 @@ public class WikiImageService : MonoBehaviour
 
     public IEnumerator DownloadTexture(string url, Action<Texture2D> onDone, Action<string> onError)
     {
-        Debug.Log("DownloadTexture");
         using (var req = UnityWebRequestTexture.GetTexture(url))
         {
             yield return req.SendWebRequest();
@@ -439,27 +431,3 @@ public class WikiImageService : MonoBehaviour
         }
     }
 }
-
-//unsuccessful:
-// BacktrackToPreviousDoor
-// backtracking
-// UpdateBacktrackAvailability
-// SetBacktrackDoorFromSnapshot
-// ShowArticleSnapshot
-// ApplyTexturesToWalls
-// SetRendererTexture 6
-// ClearDoorPreviews
-// PrefetchDoorTarget 2
-// SetBacktrackDoorFromSnapshot
-
-// successful
-// BacktrackToPreviousDoor
-// backtracking
-// UpdateBacktrackAvailability
-// SetBacktrackDoorFromSnapshot
-// ShowArticleSnapshot
-// ApplyTexturesToWalls
-// SetRendererTexture 6
-// ClearDoorPreviews
-// PrefetchDoorTarget 2
-// SetBacktrackDoorFromSnapshot

@@ -109,7 +109,6 @@ public class HallwayManager : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("Awake");
         if (wallRenderers == null || wallRenderers.Length == 0)
             if (logDebug) Debug.LogWarning("HallwayManager: No wall renderers assigned.");
 
@@ -147,7 +146,6 @@ public class HallwayManager : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("Start");
         if (!autoStart) return;
 
         // Pick from list (random if enabled) or fall back to startArticleTitle
@@ -164,7 +162,6 @@ public class HallwayManager : MonoBehaviour
     /// </summary>
     public void RespawnAndGoToDoor(int doorIndex)
     {
-        Debug.Log("RespawnAndGoToDoor");
         if (_currentDoorTargets == null || _currentDoorTargets.Count < 2)
         {
             if (logDebug) Debug.Log("No valid door targets at the moment.");
@@ -188,9 +185,32 @@ public class HallwayManager : MonoBehaviour
     /// Trigger-driven content backtrack: restore the previous hallway's content and previews,
     /// and place the player at the corresponding door spawn (left/right) they originally used.
     /// </summary>
+    /// Note for future backtrack fixing:
+    /// unsuccessful backtrack:
+    // BacktrackToPreviousDoor
+    // backtracking
+    // UpdateBacktrackAvailability
+    // SetBacktrackDoorFromSnapshot
+    // ShowArticleSnapshot
+    // ApplyTexturesToWalls
+    // SetRendererTexture 6
+    // ClearDoorPreviews
+    // PrefetchDoorTarget 2
+    // SetBacktrackDoorFromSnapshot
+
+    // successful backtrack
+    // BacktrackToPreviousDoor
+    // backtracking
+    // UpdateBacktrackAvailability
+    // SetBacktrackDoorFromSnapshot
+    // ShowArticleSnapshot
+    // ApplyTexturesToWalls
+    // SetRendererTexture 6
+    // ClearDoorPreviews
+    // PrefetchDoorTarget 2
+    // SetBacktrackDoorFromSnapshot
     public void BacktrackToPreviousDoor()
     {
-        Debug.Log("BacktrackToPreviousDoor");
         if (_history.Count == 0)
         {
             if (logDebug) Debug.Log("Backtrack requested but no history available.");
@@ -225,7 +245,6 @@ public class HallwayManager : MonoBehaviour
 
     private void SetBacktrackDoorFromSnapshot(ArticleSnapshot snap)
     {
-        Debug.Log("SetBacktrackDoorFromSnapshot");
         if (!_backtrackDoorMat || snap == null)
         {
             ClearBacktrackDoorPreview();
@@ -282,7 +301,6 @@ public class HallwayManager : MonoBehaviour
     /// </summary>
     public void BeginExperience(string title)
     {
-        Debug.Log("BeginExperience");
         // If caller passed null/empty, choose using the same logic as startup
         if (string.IsNullOrWhiteSpace(title))
             title = ChooseInitialArticleTitle();
@@ -313,7 +331,6 @@ public class HallwayManager : MonoBehaviour
 
     private IEnumerator LoadArticleRoutine(string title, List<string> presetImageUrls)
     {
-        Debug.Log("LoadArticleRoutine");
         currentArticleTitle = title;
         var norm = NormalizeTitle(title);
         _visited.Add(norm);
@@ -380,7 +397,6 @@ public class HallwayManager : MonoBehaviour
 
     private IEnumerator LoadArticleFromDoorTarget(DoorTarget chosen)
     {
-        Debug.Log("LoadArticleFromDoorTarget");
         if (chosen == null) yield break;
 
         currentArticleTitle = chosen.title;
@@ -438,7 +454,6 @@ public class HallwayManager : MonoBehaviour
 
     private IEnumerator ShowArticleSnapshot(ArticleSnapshot snap)
     {
-        Debug.Log("ShowArticleSnapshot");
         currentArticleTitle = snap.title;
         var norm = NormalizeTitle(snap.title);
 
@@ -493,7 +508,6 @@ public class HallwayManager : MonoBehaviour
     // ------------------------------- Target selection -------------------------------
     private IEnumerator ChooseDoorTargets(string baseTitle, int requiredDoorTargets)
     {
-        Debug.Log("ChooseDoorTargets");
         const int maxRounds = 4;
         int fetchCount = 300; // fetch more links per page
         int tested = 0;
@@ -568,7 +582,6 @@ public class HallwayManager : MonoBehaviour
     /// </summary>
     private IEnumerator FetchCandidateDoorTarget(string candidate, int requiredImages)
     {
-        Debug.Log("FetchCandidateDoorTarget");
         List<string> urls = null;
         string imgErr = null;
 
@@ -590,7 +603,6 @@ public class HallwayManager : MonoBehaviour
 
     private IEnumerator PrefetchDoorTarget(DoorTarget t, Renderer previewRenderer)
     {
-        Debug.Log("PrefetchDoorTarget");
         if (t == null || t.imageUrls == null || t.imageUrls.Count == 0)
         {
             // Clear using door material instances
@@ -663,7 +675,6 @@ public class HallwayManager : MonoBehaviour
 
     private void ClearDoorPreviews()
     {
-        Debug.Log("ClearDoorPreviews");
         if (_leftDoorMat) { SetDoorMatTexture(_leftDoorMat, null); SetDoorMatTiling(_leftDoorMat, Vector2.one, Vector2.zero); }
         if (_rightDoorMat) { SetDoorMatTexture(_rightDoorMat, null); SetDoorMatTiling(_rightDoorMat, Vector2.one, Vector2.zero); }
     }
@@ -672,7 +683,6 @@ public class HallwayManager : MonoBehaviour
 
     private IEnumerator ApplyImagesFromUrls(List<string> urls)
     {
-        Debug.Log("ApplyImagesFromUrls");
         if (urls == null || urls.Count == 0)
         {
             ClearWalls();
@@ -710,7 +720,6 @@ public class HallwayManager : MonoBehaviour
 
     private void ApplyTexturesToWalls(List<Texture2D> textures)
     {
-        Debug.Log("ApplyTexturesToWalls");
         for (int i = 0; i < wallRenderers.Length; i++)
         {
             var tex = (textures != null && i < textures.Count) ? textures[i] : null;
@@ -728,7 +737,6 @@ public class HallwayManager : MonoBehaviour
 
     private void SetRendererTexture(Renderer r, Texture tex)
     {
-        Debug.Log("SetRendererTexture");
         if (!r) return;
         var m = r.material;
         if (m == null) return;
@@ -742,7 +750,6 @@ public class HallwayManager : MonoBehaviour
 
     private static void TrySetTextureOnAnyPipeline(Renderer r, Texture tex)
     {
-        Debug.Log("TrySetTextureOnAnyPipeline");
         if (!r) return;
         var m = r.material;
         if (!m) return;
@@ -754,7 +761,6 @@ public class HallwayManager : MonoBehaviour
 
     private static void TrySetColorOnAnyPipeline(Renderer r, Color c)
     {
-        Debug.Log("TrySetColorOnAnyPipeline");
         if (!r) return;
         var m = r.material;
         if (!m) return;
@@ -764,7 +770,6 @@ public class HallwayManager : MonoBehaviour
 
     private void ClearWalls()
     {
-        Debug.Log("ClearWalls");
         _currentWallTextures = new List<Texture2D>(wallRenderers.Length);
         foreach (var r in wallRenderers)
         {
@@ -775,7 +780,6 @@ public class HallwayManager : MonoBehaviour
 
     private void RespawnPlayer()
     {
-        Debug.Log("RespawnPlayer");
         if (!player || !spawnPoint) return;
 
         player.SetPositionAndRotation(spawnPoint.position, spawnPoint.rotation);
@@ -789,7 +793,6 @@ public class HallwayManager : MonoBehaviour
 
     private void PushHistorySnapshot(int returnDoorIndex)
     {
-        Debug.Log("PushHistorySnapshot");
         if (string.IsNullOrEmpty(currentArticleTitle)) return;
 
         var norm = NormalizeTitle(currentArticleTitle);
@@ -816,7 +819,6 @@ public class HallwayManager : MonoBehaviour
 
     private void UpdateBacktrackAvailability()
     {
-        Debug.Log("UpdateBacktrackAvailability");
         bool available = _history.Count > 0;
         if (backtrackTrigger) backtrackTrigger.SetBacktrackAvailable(available);
         if (!available) ClearBacktrackDoorPreview(); // keep first hallway blank
